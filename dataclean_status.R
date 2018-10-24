@@ -1,71 +1,21 @@
-#library(sparklyr)
 library(dplyr)
 library(rvest)
-#library(DBI)
-#library(readr)
-#library(ff)
 library(stringr)
 
-#Sys.setenv(HADOOP_CONF_DIR = '/opt/hadoop-3.1.1/etc/hadoop')
-#Sys.setenv(YARN_CONF_DIR = '/opt/hadoop-3.1.1/etc/hadoop')
-#Sys.setenv(SPARK_HOME = '/opt/spark-2.3.2-bin-hadoop2.7')
+#file_dir1 <- "/status.csv"
+file_dir2 <- "/station.csv"
+#file_dir3 <- "/trip.csv"
+#file_dir4 <- "/weather.csv"
 
-#config <- spark_config()
-#config$spark.executor.instances <- 10
-#config$spark.driver.cores <- 1
-#config$spark.executor.cores <- 1
-#config$spark.executor.memory <- "3G"
-#config[["sparklyr.shell.deploy-mode"]] <- "yarn client"
+file_dir <- "/status_1.csv"
+wea_dir <- "/san-jose-weather-data.csv"
+wea_dir2 <- "/san-francisco-weather-data.csv"
 
-#sc <- spark_connect(master = 'yarn-client',
-#                    version = '2.3.2',
-                    #method = c("shell", "livy", "databricks", "test"),
-                    #app_name = "sparklyr",
-#                    config = config)
-
-#status <- spark_read_csv(sc, name = "sf_bike_data",
-#                         path = "/dataset/sf_bike_data/status.csv",
-#                         header = TRUE,
-#                         delimiter = ",")
-
-#spark_disconnect(sc)
-
-#file_dir1 <- "/share/sf_bike_data/status.csv"
-file_dir2 <- "/share/clean/station.csv"
-#file_dir3 <- "/share/sf_bike_data/trip.csv"
-#file_dir4 <- "/share/sf_bike_data/weather.csv"
-
-file_dir <- "/share/clean/status_1.csv"
-wea_dir <- "/share/clean/san-jose-weather-data.csv"
-wea_dir2 <- "/share/clean/san-francisco-weather-data.csv"
-
-
-#file_dir5 <- "/home/kilio/status_1000.csv"
-
-#test <- read_csv(file_dir1,col_types = "nnnc")
-
-#data.size <- 10000000
-
-#system.time({
-#  status <- read.table.ffdf(x=NULL,
-#                          file = file_dir1,
-#                          FUN = "read.csv",
-#                          header = TRUE,
-#                          sep = ",",
-#                          nrows = -1,
-#                          first.rows = data.size,
-#                          next.rows = data.size,
-#                          colClasses = c("numeric","numeric","numeric","factor"),
-#                          fill = TRUE)
-#})
 system.time({  status <- read.csv(file_dir, sep = ",", header = TRUE)  })
 system.time({  station <- read.csv(file_dir2, sep = ",")  })  
 system.time({  weather <- read.csv(wea_dir3, sep = ",")  })  
  
 names(status) <- c("station_id","bikes_available","docks_available","time")
-
-
-#test <- read.csv(file_dir5, quote = "\"")
 
 ##### check NA
 
@@ -92,8 +42,6 @@ start_time <- Sys.time()
 
 ##### merge status and station by "station_id"
 
-#names(station)[1] <- "station_id"
-
 status <- merge(status, station, by = "station_id", all.x = TRUE)
 
 ##### station situation
@@ -105,7 +53,7 @@ situation[situation_num >= 0.9] <- 1
 situation[situation_num > 0.1 & situation_num < 0.9] <- 0
 status <- cbind(status, situation = situation)
 
-write.table(status, file = "/share/clean/status_1_two.csv", sep = ",", row.names = FALSE)
+write.table(status, file = "/status_1_two.csv", sep = ",", row.names = FALSE)
 
 end_time <- Sys.time()
 end_time - start_time
@@ -118,7 +66,7 @@ end_time - start_time
 
 start_time <- Sys.time()
 for (i in c(2:3,5:15)) {
-  dir <- "/share/clean/status_"
+  dir <- "/status_"
   loadfile <- paste0(dir, i, ".csv")
   status <- read.csv(loadfile, sep = ",", header = FALSE)
   names(status) <- c("station_id","bikes_available","docks_available","time")
@@ -141,10 +89,6 @@ for (i in c(2:3,5:15)) {
 }
 end_time <- Sys.time()
 end_time - start_time
-
-
-
-
 
 ##### weather clean
 
@@ -193,17 +137,17 @@ imputeData$Visibility <- as.character(imputeData$Visibility)
 imputeData$Visibility[is.na(imputeData$Visibility)] <- "0 km"
 imputeData$Visibility <- str_trim(sub("km", "", imputeData$Visibility))
 
-write.table(imputeData, file = "/share/clean/san-francisco-weather-data_new.csv", sep = ",", row.names = FALSE)
+write.table(imputeData, file = "/san-francisco-weather-data_new.csv", sep = ",", row.names = FALSE)
 
 
 ##### weather ver.2
 
 
-wea_dir1 <- "/share/clean/san-francisco-weather-data_new2.csv"
-wea_dir2 <- "/share/clean/san-jose-weather-data_new2.csv"
-wea_dir3 <- "/share/clean/Palo-Alto-weather-data-ver-2_new2.csv"
-wea_dir4 <- "/share/clean/Mountain-View-weather-data-ver-2_new2.csv"
-wea_dir5 <- "/share/clean/Redwood-City-weather-data-ver-2.csv"
+wea_dir1 <- "/san-francisco-weather-data_new2.csv"
+wea_dir2 <- "/san-jose-weather-data_new2.csv"
+wea_dir3 <- "/Palo-Alto-weather-data-ver-2_new2.csv"
+wea_dir4 <- "/Mountain-View-weather-data-ver-2_new2.csv"
+wea_dir5 <- "/Redwood-City-weather-data-ver-2.csv"
 
 system.time({ weather <- read.csv(wea_dir4, sep = ",") })
 weather <- weather[!duplicated(weather$new.date),]
@@ -229,14 +173,14 @@ weather2$city <- "Mountain View"
 
 
 
-write.table(weather2, file = "/share/clean/Mountain-View-weather-data-ver-2_new3.csv", sep = ",", row.names = FALSE)
+write.table(weather2, file = "/Mountain-View-weather-data-ver-2_new3.csv", sep = ",", row.names = FALSE)
 
 ##### merge status.csv & weather_city
 
 start_time <- Sys.time()
 for (i in 2:15) {
-  file_dir <- "/share/clean/"
-  wea_dir <- "/share/clean/weather.csv"
+  file_dir <- "/"
+  wea_dir <- "/weather.csv"
   locdfile <- paste0(file_dir, "status_", i, "_two.csv")
 
   status <- read.csv(locdfile, sep = ",", header = FALSE)
@@ -244,11 +188,6 @@ for (i in 2:15) {
   
   names(status) <- c("station_id","bikes_available","docks_available","time",
                      "weekdays","name","lat","long","dock_count","city","installation_date","situation")
-  
-  #head(status) %>% View()
-  #unique(status$city)
-  #status <- status[-11]
-  #weather <- weather[-c(6,10)]
   
   a <- as.character(status$time)
   b <- paste0(substr(a, 1, 4), substr(a, 6, 7), substr(a, 9, 10))
@@ -279,16 +218,16 @@ end_time - start_time
 
 ##### weather delect repeat
 
-wea_dir1 <- "/share/clean/Mountain-View-weather-data-ver-2_new4.csv"
-wea_dir2 <- "/share/clean/Palo-Alto-weather-data-ver-2_new4.csv"
-wea_dir3 <- "/share/clean/Redwood-City-weather-data-ver-2_new2.csv"
-wea_dir4 <- "/share/clean/san-francisco-weather-data_new3.csv"
-wea_dir5 <- "/share/clean/san-jose-weather-data_new4.csv"
+wea_dir1 <- "/Mountain-View-weather-data-ver-2_new4.csv"
+wea_dir2 <- "/Palo-Alto-weather-data-ver-2_new4.csv"
+wea_dir3 <- "/Redwood-City-weather-data-ver-2_new2.csv"
+wea_dir4 <- "/san-francisco-weather-data_new3.csv"
+wea_dir5 <- "/san-jose-weather-data_new4.csv"
 
 weather <- read.csv(wea_dir5, sep = ",")
 weather <- weather[!duplicated(weather$id),]
 
-write.table(weather, file = "/share/clean/san-jose-weather-data_new5.csv", sep = ",", row.names = FALSE)
+write.table(weather, file = "/san-jose-weather-data_new5.csv", sep = ",", row.names = FALSE)
 
 
 
