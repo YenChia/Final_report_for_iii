@@ -2,7 +2,7 @@ library(dplyr)
 library(rvest)
 library(stringr)
 
-file_dir <- "/share/sf_bike_data/status.csv"
+file_dir <- "/status.csv"
 
 system.time({  status <- read.csv(file_dir, sep = ",", header = TRUE)  })
 
@@ -30,7 +30,7 @@ write.table(status, file = "/share/clean/status_new.csv", sep = ",", row.names =
 
 # %>% filter(min < 30) %>% getmode("situation")
 
-file_dir <- "/share/clean/status_new.csv"
+file_dir <- "/status_new.csv"
 
 system.time({  status <- read.csv(file_dir, sep = " ", header = TRUE)  })
 
@@ -52,7 +52,7 @@ length(z)
 
 start_time <- Sys.time()
 for (i in z) {
-  savevar <- paste0("/share/clean/status2_", i,".csv")
+  savevar <- paste0("/status2_", i,".csv")
   write.table(status[status$station_id==i,], file = savevar, sep = ",", row.names = FALSE)
 }
 end_time <- Sys.time()
@@ -62,10 +62,10 @@ y <- c(55,73)
 
 start_time <- Sys.time()
 for (i in y) {
-  loadvar <- paste0("/share/clean/status2_", i,".csv")
+  loadvar <- paste0("/status2_", i,".csv")
   status2 <- read.csv(loadvar, sep = ",", header = TRUE)
   status3 <- status2 %>% group_by(id) %>% do(getmode(., "situation"))
-  savefile <- paste0("/share/clean/status22_", i,".csv")
+  savefile <- paste0("/status22_", i,".csv")
   write.table(status3, file = savefile, sep = ",", row.names = FALSE, col.names = FALSE)
 }
 end_time <- Sys.time()
@@ -74,7 +74,7 @@ end_time - start_time
 
 #### status2_55.csv  look    73
 
-status2 <- read.csv("/share/clean/status2_73.csv", sep = ",", header = TRUE)
+status2 <- read.csv("/status2_73.csv", sep = ",", header = TRUE)
 
 unique(status2$station_id)
 unique(status2$bikes_available)
@@ -84,9 +84,9 @@ unique(status2$situation)
 
 ##### merge station & weather
 
-system.time({  status <- read.csv("/share/clean/status22_new.csv", sep = ",", header = TRUE)  })  
-system.time({  station <- read.csv("/share/clean/station.csv", sep = ",")  })  
-system.time({  weather <- read.csv("/share/clean/weather.csv", sep = ",")  })  
+system.time({  status <- read.csv("/status22_new.csv", sep = ",", header = TRUE)  })  
+system.time({  station <- read.csv("/station.csv", sep = ",")  })  
+system.time({  weather <- read.csv("/weather.csv", sep = ",")  })  
 
 start_time <- Sys.time()
   status$id <- as.character(status$id)
@@ -108,7 +108,7 @@ start_time <- Sys.time()
   status <- status[order(status$k),]
   status[c("k","Date","installation_date","id")] <- NULL
 
-  write.table(status, file="/share/clean/status_30min.csv", sep = ",", row.names = FALSE)
+  write.table(status, file="/status_30min.csv", sep = ",", row.names = FALSE)
 end_time <- Sys.time()
 end_time - start_time
 
