@@ -1,37 +1,10 @@
 library(dplyr)
 library(stringr)
 library(rvest)
-#library(saprklyr)
-
-df <- read.csv("/home/kilio/R/status10000.csv", sep = ",", header = TRUE)
-
-a <- as.character(df$time)
-b <- paste0(substr(a,1,4),substr(a,6,7),substr(a,9,10),substr(a,12,13))
-d <- as.integer(substr(a,15,16))
-df[d>=30,"id"] <- paste0(b[d>=30],"30")
-df[d<30,"id"] <- paste0(b[d<30],"00")
-
-write.table(df, file = "/home/kilio/R/statusNew.csv", sep = ",", row.names = FALSE)
-
-df["situation"] <- NULL
-d = c(NA, length = nrow(df))
-b <- df$bikes_available / (df$bikes_available + df$docks_available)
-d[b<=0.1] <- -1
-d[b>=0.9] <- 1
-d[b>0.1&b<0.9] <- 0
-df <- cbind(df, situation = d)
-
-df2 <- df %>% group_by(station_id, id) %>% do(getMode(.,"situation"))
-df2 <- df %>% group_by(station_id) %>% do(group_by(.["id"])) #%>% do(getMode(.,"situation"))
-
-getMode <- function(x,v){
-  a <- names(table(x[v]))[which.max(table(x[v]))]
-  head(x[x[v]==a,],1)
-}
 
 ##### trip.csv
 
-file_dir <- "/share/sf_bike_data/trip.csv"
+file_dir <- "/trip.csv"
 trip <- read.csv(file_dir, sep = ",", header = TRUE)
 
 ##### check NA
@@ -91,7 +64,7 @@ end_time - start_time
 
 trip["start_id"] <- NULL
 trip["end_id"] <- NULL
-system.time({  write.table(retNum, file = "/share/clean/trip_fix.csv", sep = ",", row.names = FALSE)  })
+system.time({  write.table(retNum, file = "/trip_fix.csv", sep = ",", row.names = FALSE)  })
 
 ##### calculate every 30min number of borrow and return
 
@@ -108,12 +81,12 @@ end_time - start_time
 paste(trip$start_station_id, trip$start_id) %>% unique() %>% length()
 paste(trip$end_station_id, trip$end_id) %>% unique() %>% length()
 
-write.table(borNum, file = "/share/clean/borNum.csv", sep = ",", row.names = FALSE)
-write.table(retNum, file = "/share/clean/retNum.csv", sep = ",", row.names = FALSE)
+write.table(borNum, file = "/borNum.csv", sep = ",", row.names = FALSE)
+write.table(retNum, file = "/retNum.csv", sep = ",", row.names = FALSE)
 
 ##### merge status & trip
 
-file_dir <- "/share/sf_bike_clean/status_30min.csv"
+file_dir <- "/status_30min.csv"
 system.time({  status <- read.csv(file_dir, sep = ",", header = TRUE)  })
 
 status$id <- paste0(substr(status$time,1,4),substr(status$time,6,7),substr(status$time,9,10),substr(status$time,12,13),substr(status$time,15,16))
@@ -127,7 +100,7 @@ status2[is.na(status2["retNum"]),"retNum"] <- 0
 
 start_time <- Sys.time()
   status2["id"] <- NULL
-  write.table(status2, file = "/share/clean/status_30min.csv", sep = ",", row.names = FALSE)
+  write.table(status2, file = "/status_30min.csv", sep = ",", row.names = FALSE)
 end_time <- Sys.time()
 end_time - start_time
 
@@ -138,8 +111,3 @@ status2[status2$weekdays == "Saturday" | status2$weekdays == "Sunday", "workday"
 status2[is.na(status2["workday"]),"workday"] <- 1
 
 unique(status2$weekdays)
-
-
-
-
-
