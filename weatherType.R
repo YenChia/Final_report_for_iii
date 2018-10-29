@@ -1,6 +1,6 @@
-file_dir1 <- "/share/clean/status_30min_2.csv"
-file_dir2 <- "/share/clean/status_30min_flo_2.csv"
-file_dir3 <- "/share/clean/weather.csv"
+file_dir1 <- "/status_30min_2.csv"
+file_dir2 <- "/status_30min_flo_2.csv"
+file_dir3 <- "/weather.csv"
 
 
 status <- read.csv(file_dir2, sep = ",", header = TRUE)
@@ -57,7 +57,7 @@ write.table(status, file = file_dir2, sep = ",", row.names = FALSE)
 
 #####  for 1 min csv
 
-file_dir <- "/share/clean/"
+file_dir <- "/"
 
 start_time <- Sys.time()
 for (i in 2:15) {
