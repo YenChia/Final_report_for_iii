@@ -1,16 +1,15 @@
 library(dplyr)
 library(rvest)
 library(ggplot2)
-#library(ggmap)
 library(scales)
 library(stringr)
 library(tidyr)
 
-file_dir <- "/home/kilio/R/trip_two2.csv"
-file_dir1 <- "/home/kilio/R/trip_fix.csv"
-file_dir2 <- "/home/kilio/R/station.csv"
-file_dir3 <- "/home/kilio/R/borNum.csv"
-file_dir4 <- "/home/kilio/R/retNum.csv"
+file_dir <- "/trip_two2.csv"
+file_dir1 <- "/trip_fix.csv"
+file_dir2 <- "/station.csv"
+file_dir3 <- "/borNum.csv"
+file_dir4 <- "/retNum.csv"
 
 ##### start
 
@@ -27,7 +26,7 @@ trip$weekdays <- as.factor(trip$weekdays)
 wd <- c("Monday", "Tuesday", "Wednesday","Thursday", "Friday", "Saturday", "Sunday")
 trip$weekdays <- factor(trip$weekdays, levels = wd)
 
-png(filename = "/home/kilio/R/perWeekday.png", width = 1200, height = 800)
+png(filename = "/perWeekday.png", width = 1200, height = 800)
 ggplot(trip, aes(weekdays, group = subscription_type, fill = subscription_type))+
   geom_bar(alpha=.5, position = "dodge")+
   theme(axis.text = element_text(size = 18, color = "black", face = "bold", hjust = 0.5, vjust = 0.5, angle = 0))+
@@ -101,7 +100,7 @@ trip$workday <- NA
 trip[trip$weekdays == "Sunday" | trip$weekdays == "Saturday", "workday"] <- "non-Work"
 trip[is.na(trip$workday), "workday"] <- "Work"
 
-png(filename = "/home/kilio/R/perHour.png", width = 1200, height = 800)
+png(filename = "/perHour.png", width = 1200, height = 800)
 ggplot(trip, aes(trip$hour, group = workday, fill = workday))+
   geom_bar(alpha=.4, position = "dodge")+
   theme(axis.text = element_text(size = 18, color = "black", face = "bold", hjust = 0.5, vjust = 0.5, angle = 0))+
@@ -122,7 +121,7 @@ data_minute <- summary(trip$minute)
 trip[trip$minute>100,"minute"] <- 100
 trip2 <- trip[trip$minute<=60,]
 
-png(filename = "/home/kilio/R/perMinute.png", width = 1200, height = 800)
+png(filename = "/perMinute.png", width = 1200, height = 800)
 ggplot(trip2, aes(minute, group=subscription_type, fill=subscription_type))+
   geom_bar(alpha=.4, position = "stack")+
   scale_x_continuous(breaks = seq(0,60,5))+
@@ -231,9 +230,3 @@ p <- plot_geo(locationmode = "SF", color = I("red")) %>%
 
 chart_link = api_create(p, filename = "sf_bike", fileopt = "overwrite")
 chart_link
-
-
-
-
-
-
