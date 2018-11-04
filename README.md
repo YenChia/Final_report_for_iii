@@ -6,3 +6,4 @@
 * 更新dataclean_trip.csv 擴展還車狀況欄位
 * weatherType.R 將天氣類別減少至7種，並將風向欄位只保留角度數據
 * trip_EDA.R 觀察trip檔，並作出數種數據特徵視覺化圖表
+* sparklyr_30min.R 使用sparklyr套件進行機器學習
