@@ -5,36 +5,15 @@ library(DBI)
 library(stringr)
 library(rsparkling)
 library(ggplot2)
-#library(leaflet)
-#library(h2o)
-#library(DT)
-#library(ggcorrplot)
+
 library(tidyr)
 
-Sys.setenv(HADOOP_CONF_DIR = '/opt/hadoop-3.1.1/etc/hadoop')
-Sys.setenv(YARN_CONF_DIR = '/opt/hadoop-3.1.1/etc/hadoop')
-Sys.setenv(SPARK_HOME = '/opt/spark-2.3.2-bin-hadoop2.7')
+Sys.setenv(HADOOP_CONF_DIR = 'hadoop-3.1.1/etc/hadoop')
+Sys.setenv(YARN_CONF_DIR = 'hadoop-3.1.1/etc/hadoop')
+Sys.setenv(SPARK_HOME = 'spark-2.3.2-bin-hadoop2.7')
 
 config <- spark_config()
-#config$'sparklyr.shell.executor-memory' <- "92g"
-#config$'sparklyr.shell.driver-memory' <- "92g"
-#config$"spark.default.parallelism" <- "100"
-#config$spark.executor.cores <- 12
-#config$spark.executor.memory <- "20G"
-#config$spark.yarn.am.cores <- 12
-#config$spark.yarn.am.memory <- "20G"
 config$spark.executor.instances <- 17
-#config$spark.dynamicAllocation.enabled <- "false"
-#config$maximizeResourceAllocation <- "true"
-#config$spark.default.parallelism <- 32
-#config$spark.memory.fraction <- 0.8
-#config$spark.driver.cores <- 2
-#config$spark.driver.memory <- "8G"
-#config$spark.executor.cores <- 1
-#config$spark.executor.memory <- "3G"
-#config[["sparklyr.shell.deploy-mode"]] <- "yarn client"
-
-
 
 system.time({  sc <- spark_connect(master = 'yarn-client', # 'yarn-client',"spark://spkma.example.org:7077,rma.example.org:7077"
                     version = '2.3.2',
@@ -83,25 +62,6 @@ features_col2 <- c("station_id", "city2", "year", "month", "hour", "weekdays2", 
 features <- "situation ~ station_id + city + year + month + hour + weekdays + Temperature + Weather +Wind + Wind_Direction + Humidity + Barometer + Visibility + workday"
 features2 <- "situation ~ station_id + city2 + year + month + hour + weekdays2 + Temperature + Weather2 + Wind + Wind_Direction + Humidity + Barometer + Visibility + workday"
 
-                  c("end_station_id_2",
-                  "end_station_id_3", "end_station_id_4", "end_station_id_5", "end_station_id_6", "end_station_id_7",
-                  "end_station_id_8", "end_station_id_9", "end_station_id_10", "end_station_id_11",
-                  "end_station_id_12", "end_station_id_13", "end_station_id_14", "end_station_id_16",
-                  "end_station_id_21", "end_station_id_22", "end_station_id_23", "end_station_id_24",
-                  "end_station_id_25", "end_station_id_26", "end_station_id_27", "end_station_id_28",
-                  "end_station_id_29", "end_station_id_30", "end_station_id_31", "end_station_id_32",
-                  "end_station_id_33", "end_station_id_34", "end_station_id_35", "end_station_id_36",
-                  "end_station_id_37", "end_station_id_38", "end_station_id_39", "end_station_id_41",
-                  "end_station_id_42", "end_station_id_45", "end_station_id_46", "end_station_id_47",
-                  "end_station_id_48", "end_station_id_49", "end_station_id_50", "end_station_id_51",
-                  "end_station_id_54", "end_station_id_55", "end_station_id_56", "end_station_id_57",
-                  "end_station_id_58", "end_station_id_59", "end_station_id_60", "end_station_id_61",
-                  "end_station_id_62", "end_station_id_63", "end_station_id_64", "end_station_id_65",
-                  "end_station_id_66", "end_station_id_67", "end_station_id_68", "end_station_id_69", 
-                  "end_station_id_70", "end_station_id_71", "end_station_id_72", "end_station_id_73",
-                  "end_station_id_74", "end_station_id_75", "end_station_id_76", "end_station_id_77",
-                  "end_station_id_80", "end_station_id_82", "end_station_id_83", "end_station_id_84",
-                  "borNum", "retNum")
 #####
 system.time({  })
 ##### 按照"situation"欄位分割訓練、測試資料
@@ -177,20 +137,6 @@ end_time <- Sys.time()
 end_time - start_time
 
 #####  ml_random_forest 將資料內容全部轉成數字，目標欄位依舊是轉類別型
-
-#features_col2 <- c("station_id", "city2", "year", "month", "hour", "weekdays2", "Temperature", "Weather2",
-#                   "Wind", "Wind_Direction", "Humidity", "Barometer", "Visibility", "workday")
-#features2 <- "situation ~ station_id + city2 + year + month + hour + weekdays2 + Temperature + Weather2 + Wind + Wind_Direction + Humidity + Barometer + Visibility + workday"
-
-#train_test_status <- status %>% 
-#  ft_string_indexer(input_col = "city", output_col = "city2") %>% 
-#  ft_string_indexer(input_col = "weekdays", output_col = "weekdays2") %>% 
-#  ft_string_indexer(input_col = "Weather", output_col = "Weather2") %>% 
-#  select(features_col2, situation) %>% 
-#  group_by(situation) %>% 
-#  sdf_partition(training = 0.8, testing = 0.2, seed = 6138)
-#train <- train_test_status$training
-#test <- train_test_status$testing
 
 features_col <- c("station_id", "city", "year", "month", "hour", "weekdays", "Temperature", "Weather",
                   "Wind", "Wind_Direction", "Humidity", "Barometer", "Visibility", "workday")
@@ -274,10 +220,3 @@ start_time <- Sys.time()
   rp(results)
 end_time <- Sys.time()
 end_time - start_time
-
-
-
-
-
-
-
