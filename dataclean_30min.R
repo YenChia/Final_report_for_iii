@@ -112,4 +112,17 @@ start_time <- Sys.time()
 end_time <- Sys.time()
 end_time - start_time
 
+##### change column "hour" append 30min
+
+file_dir <- "/status_30min_2.csv"
+system.time({  status <- read.csv(file_dir, sep = ",", header = TRUE)  })
+
+head(status, 5)
+a <- as.character(status$time)
+b <- paste0(substr(a, 12, 13), substr(a, 15, 16))
+status$hour <- b
+unique(status$hour)
+
+system.time({  write.table(status, file="/status_30min_2.csv", sep = ",", row.names = FALSE)  })
+
 
