@@ -127,11 +127,17 @@ tree_model <- train %>%
                               #max_memory_in_mb = 256L,
                               #uid = random_string("decision_tree_classifier_"), ...)
 #ml_feature_importances(tree_model)
-  responses_DT <- test %>% 
-    select(features_col, situation) %>% 
-    collect() %>% 
-    mutate(pre_situ = predict(tree_model, test))
-  results_DT <- table(Prediction = responses_DT$pre_situ, Actual = responses_DT$situation)
+#  responses_DT <- test %>% 
+#    select(features_col, situation) %>% 
+#    collect() %>% 
+#    mutate(pre_situ = predict(tree_model, test))
+#  results_DT <- table(Prediction = responses_DT$pre_situ, Actual = responses_DT$situation)
+#  rp(results_DT)
+  pred <- ml_predict(tree_model, test)
+  responses_DT <- pred %>% 
+    select(predicted_label, situation) %>% 
+    collect()
+  results_DT <- table(Prediction = responses_DT$predicted_label, Actual = responses_DT$situation)
   rp(results_DT)
 end_time <- Sys.time()
 end_time - start_time
@@ -166,12 +172,18 @@ forest_model <- train %>%
                    #thresholds = NULL,
                    #cache_node_ids = FALSE,
                    #max_memory_in_mb = 1024)
-responses_RF <- test %>% 
-  select(features_col, situation) %>% 
-  collect() %>% 
-  mutate(pre_situ = predict(forest_model, test))
-results_RF <- table(Prediction = responses_RF$pre_situ, Actual = responses_RF$situation)
-rp(results_RF)
+#responses_RF <- test %>% 
+#  select(features_col, situation) %>% 
+#  collect() %>% 
+#  mutate(pre_situ = predict(forest_model, test))
+#results_RF <- table(Prediction = responses_RF$pre_situ, Actual = responses_RF$situation)
+#rp(results_RF)
+  pred <- ml_predict(forest_model, test)
+  responses_RF <- pred %>% 
+    select(predicted_label, situation) %>% 
+    collect()
+  results_RF <- table(Prediction = responses_RF$predicted_label, Actual = responses_RF$situation)
+  rp(results_RF)
 end_time <- Sys.time()
 end_time - start_time
 
